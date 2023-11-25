@@ -1,15 +1,19 @@
 require('dotenv').config();
 const express = require('express');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
 const creds= require('./krn-intern-5cd0ae828e97.json');
 const { google } = require('googleapis');
 const { promisify } = require('util');
+const cors = require('cors');
+
+
 
 const app = express();
-const wss = new WebSocket.Server({ noServer: true});
+app.use(cors());
+// const wss = new WebSocket.Server({ noServer: true});
 
-app.post('/webhook', async (req, res) => {
+app.get('/webhook', async (req, res) => {
   console.log('Webhook received');
 
   let api;
@@ -36,17 +40,14 @@ app.post('/webhook', async (req, res) => {
       allValues[title] = values;
     });
     console.log(allValues);
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(allValues));
-      }
-    });
+    res.json(allValues); // Send the data as a JSON response
   })
   .catch(err => {
     console.error(err);
+    res.status(500).send('An error occurred');
   });
-
-  res.sendStatus(200);
 });
+
+// app.listen(3000, () => console.log('Server is listening on port 3000'));
 
 app.listen(3000, () => console.log('Server is listening on port 3000'));
