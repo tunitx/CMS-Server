@@ -7,7 +7,7 @@ const { google } = require('googleapis');
 const { promisify } = require('util');
 
 const app = express();
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ noServer: true});
 
 app.post('/webhook', async (req, res) => {
   console.log('Webhook received');
